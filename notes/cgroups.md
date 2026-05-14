@@ -9,3 +9,5 @@ This runtime uses cgroup v2 to limit resource usage.
 ## Reasoning
 Resource limits prevent containers from exhausting host resources
 and are a core part of production container runtimes.
+This prevents the CPU from getting out of processing power and
+storage getting out of limit
