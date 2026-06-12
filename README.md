@@ -5,19 +5,20 @@ This project re-implements the core ideas behind Docker using Linux namespaces, 
 
 <b>Program Lifecycle</b>
 
-python main.py echo hello
+
+```python main.py echo hello```
+
+        ↓
+        `
+```main() called```
+
+        ↓
+
+```run_container(["echo", "hello"]) called```
 
         ↓
         
-main() called
-
-        ↓
-
-run_container(["echo", "hello"]) called
-
-        ↓
-        
-fork() splits into parent + child
+```fork() splits into parent + child```
 
         ↓
         
