@@ -1,0 +1,28 @@
+The Networking Architecture
+
+1. To give a container its own IP address that can reach the internet, we have to act like virtual electricians. We need three components:
+
+2. The Virtual Switch (Bridge): We will create a virtual network switch on your host machine called appnet.
+
+3. The Virtual Cable (veth pair): A veth (Virtual Ethernet) pair is quite literally a virtual ethernet cable with two ends.
+
+4. The Wiring: We plug one end of the cable into the appnet switch on your host, and we shove the other end inside the container's isolated network namespace.
+
+Once wired, the container sends packets through its end of the cable, they pop out on the host's appnet switch, and the host routes them to the actual internet.
+
+
+·network.py
+Phase 1 (Provisioning): 
+	Creates a unique, bi-directional virtual Ethernet cable pair (veth_host and veth_guest) mapped to the container's PID.
+
+Phase 2 (Anchoring): 
+	Plugs the veth_host end directly into the host's appnet virtual bridge switch and powers on the interface link.
+
+Phase 3 (Isolation): 
+	Transfers the veth_guest end out of the host namespace and pushes it into the container’s isolated network namespace.
+
+Phase 4 (Renaming): 
+	Enters the container namespace to activate the local loopback (127.0.0.1) and renames the cryptic guest link to standard eth0.
+
+Phase 5 (Routing): 
+	Binds the static IP 10.0.0.2/24 to eth0 and points the container's default gateway route directly back to the host bridge (10.0.0.1).

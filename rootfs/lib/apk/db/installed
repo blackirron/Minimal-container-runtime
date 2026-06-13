@@ -385,6 +385,26 @@ F:var
 F:var/cache
 F:var/cache/apk
 
+C:Q11fzVxPotQSRAtdIyn0NiifWDgfM=
+P:argon2-libs
+V:20190702-r5
+A:x86_64
+S:20053
+I:42688
+T:The password hash Argon2, winner of PHC (libraries)
+U:https://github.com/P-H-C/phc-winner-argon2
+L:Apache-2.0 OR CC0-1.0
+o:argon2
+m:Corey Oliver <coreyjonoliver@gmail.com>
+t:1684120357
+c:33283848034c9885d984c8e8697c645c57324938
+D:so:libc.musl-x86_64.so.1
+p:so:libargon2.so.1=1
+F:usr
+F:usr/lib
+R:libargon2.so.1
+Z:Q1HtRBWIHd2GxsGlpZqylE78Z+2+s=
+
 C:Q1jpqyHU374PqoFRUXvYVbY7TjMBw=
 P:bash
 V:5.3.3-r1
@@ -2112,6 +2132,30 @@ R:libcurl.so.4.8.0
 a:0:0:755
 Z:Q1Rxig7NaNqDJJAdAPV5XULnxUaQA=
 
+C:Q1Rj9pM1oyI7HOaFbOO+9cA/7nIb8=
+P:libedit
+V:20251016.3.1-r0
+A:x86_64
+S:76561
+I:178016
+T:BSD line editing library
+U:https://www.thrysoee.dk/editline
+L:BSD-3-Clause
+o:libedit
+m:Celeste <cielesti@protonmail.com>
+t:1760678660
+c:211d61660b4b7daefe3bb0fff0e99264234c63fe
+D:so:libc.musl-x86_64.so.1 so:libncursesw.so.6
+p:so:libedit.so.0=0.0.76
+F:usr
+F:usr/lib
+R:libedit.so.0
+a:0:0:777
+Z:Q11fYRYJh5Ah8+W9eC72cXIYmyXao=
+R:libedit.so.0.0.76
+a:0:0:755
+Z:Q1w7V43xM4/LIISb1cRy9LVpiYAAA=
+
 C:Q1V2DVPd18yop0LGcuTgCkdXGOrKo=
 P:libexpat
 V:2.7.5-r0
@@ -2299,6 +2343,30 @@ Z:Q1kGDEh29/9wEgjohLVSSJbliROvQ=
 R:libunistring.so.5.2.1
 a:0:0:755
 Z:Q17Z1NdgYq1+M1ML8k0YbhsbFjJ0c=
+
+C:Q1qYDu0QwpKZ7rAv+zqovUw06+gi8=
+P:libxml2
+V:2.13.9-r1
+A:x86_64
+S:495335
+I:1072096
+T:XML parsing library, version 2
+U:https://gitlab.gnome.org/GNOME/libxml2
+L:MIT
+o:libxml2
+m:Carlo Landmeter <clandmeter@alpinelinux.org>
+t:1780223908
+c:d7ba2f7929f49815296140d7d7a3e98bbcce535a
+D:so:libc.musl-x86_64.so.1 so:liblzma.so.5 so:libz.so.1
+p:so:libxml2.so.2=2.13.9
+F:usr
+F:usr/lib
+R:libxml2.so.2
+a:0:0:777
+Z:Q1nn/3k7ysBIpnaHISfzrbzzszasY=
+R:libxml2.so.2.13.9
+a:0:0:755
+Z:Q1UQngPJ3Cv3Az+45BADpgunhNLg0=
 
 C:Q10Fp17BPhp6i6tWznzT3Hm9cn5pg=
 P:musl
@@ -5629,6 +5697,111 @@ R:libpcre2-posix.so.3.0.7
 a:0:0:755
 Z:Q1No5r2Ohj3FBQGNh2TSmED2FqfBs=
 
+C:Q1WZrI5jTZM3Cr3P01/DJhnZ5hfL8=
+P:php83
+V:8.3.31-r0
+A:x86_64
+S:1944245
+I:8394648
+T:The PHP83 language runtime engine
+U:https://www.php.net/
+L:PHP-3.01 BSD-3-Clause LGPL-2.0-or-later MIT Zend-2.0
+o:php83
+m:Andy Postnikov <apostnikov@gmail.com>
+t:1778168454
+c:c25a08b4a97c2bfb52c40e14d299520dceed72e0
+k:70
+D:php83-common so:libargon2.so.1 so:libc.musl-x86_64.so.1 so:libedit.so.0 so:libpcre2-8.so.0 so:libxml2.so.2 so:libz.so.1
+p:php83-cli php-cli php cmd:php83=8.3.31-r0
+F:usr
+F:usr/bin
+R:php83
+a:0:0:755
+Z:Q1+0aKBGd7t8auFc6iB4ogP6xKpYk=
+
+C:Q16HZwtddVPA4mVa7IP8KbBYWkeBs=
+P:php83-common
+V:8.3.31-r0
+A:x86_64
+S:25732
+I:73399
+T:The PHP83 language runtime engine (common config)
+U:https://www.php.net/
+L:PHP-3.01 BSD-3-Clause LGPL-2.0-or-later MIT Zend-2.0
+o:php83
+m:Andy Postnikov <apostnikov@gmail.com>
+t:1778168454
+c:c25a08b4a97c2bfb52c40e14d299520dceed72e0
+k:70
+p:php-common php83-zlib php-zlib php83-json php-json
+F:etc
+F:etc/php83
+R:php.ini
+Z:Q1czsnYD3SI78E2jfP4ag+k6fDPJY=
+F:etc/php83/conf.d
+F:usr
+F:usr/lib
+F:usr/lib/php83
+F:usr/lib/php83/modules
+
+C:Q1MPBR97EJbCPPl+U5IaqmhDhLzpA=
+P:php83-session
+V:8.3.31-r0
+A:x86_64
+S:37714
+I:97330
+T:PHP83 extension: Sessions
+U:https://www.php.net/
+L:PHP-3.01 BSD-3-Clause LGPL-2.0-or-later MIT Zend-2.0
+o:php83
+m:Andy Postnikov <apostnikov@gmail.com>
+t:1778168454
+c:c25a08b4a97c2bfb52c40e14d299520dceed72e0
+k:70
+D:php83-common so:libc.musl-x86_64.so.1
+p:php-session
+F:etc
+F:etc/php83
+F:etc/php83/conf.d
+R:00_session.ini
+Z:Q1hil2/SnLr5HC1WgGypcEcdTTc+g=
+F:usr
+F:usr/lib
+F:usr/lib/php83
+F:usr/lib/php83/modules
+R:session.so
+a:0:0:755
+Z:Q1fbjGp4l9DqWbXkoht3kdstZmjuk=
+
+C:Q1Jyg6reVGGaW8iTxnAQNaKtdDH/8=
+P:php83-tokenizer
+V:8.3.31-r0
+A:x86_64
+S:11216
+I:30644
+T:PHP83 extension: tokenizer
+U:https://www.php.net/
+L:PHP-3.01 BSD-3-Clause LGPL-2.0-or-later MIT Zend-2.0
+o:php83
+m:Andy Postnikov <apostnikov@gmail.com>
+t:1778168454
+c:c25a08b4a97c2bfb52c40e14d299520dceed72e0
+k:70
+D:php83-common so:libc.musl-x86_64.so.1
+p:php-tokenizer
+F:etc
+F:etc/php83
+F:etc/php83/conf.d
+R:00_tokenizer.ini
+Z:Q1J1pzSZdKbEA8oeK20jR9qk9OwjM=
+F:usr
+F:usr/lib
+F:usr/lib/php83
+F:usr/lib/php83/modules
+R:tokenizer.so
+a:0:0:755
+Z:Q1X8Acfs+OM236IuQ+ojyZxB6CJe8=
+
 C:Q1iuuBs6R3+SK5tqUzOBEUxj3ZKP4=
 P:readline
 V:8.3.1-r0
@@ -5772,6 +5945,30 @@ F:usr/bin
 R:ssl_client
 a:0:0:755
 Z:Q1osK/lnx8VEfhWr0tlTjMBJgJqzE=
+
+C:Q13fP4scPSVhrmdSO5uu85j5cZWbs=
+P:xz-libs
+V:5.8.3-r0
+A:x86_64
+S:117794
+I:227192
+T:Library and CLI tools for XZ and LZMA compressed files (libraries)
+U:https://tukaani.org/xz/
+L:GPL-2.0-or-later AND 0BSD AND Public-Domain AND LGPL-2.1-or-later
+o:xz
+m:Natanael Copa <ncopa@alpinelinux.org>
+t:1777359944
+c:98143392db0a1030bbb505e5e5a9c06b6c2883e5
+D:so:libc.musl-x86_64.so.1
+p:so:liblzma.so.5=5.8.3
+F:usr
+F:usr/lib
+R:liblzma.so.5
+a:0:0:777
+Z:Q1DXsp3Wx9wC+sef6LTJdnLvbygxk=
+R:liblzma.so.5.8.3
+a:0:0:755
+Z:Q1HZ4PwdDhTbHlGkNx8Vs2da355jg=
 
 C:Q1Po6Odt/vtO/SdlitpteS5muid14=
 P:zlib

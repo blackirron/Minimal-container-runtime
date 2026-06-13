@@ -11,3 +11,6 @@ git
 musl-utils
 nodejs
 npm
+php83
+php83-session
+php83-tokenizer
