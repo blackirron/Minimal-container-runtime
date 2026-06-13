@@ -2,5 +2,12 @@ alpine-baselayout
 alpine-keys
 alpine-release
 apk-tools
+bash
+btop
 busybox
+cmatrix
+figlet
+git
 musl-utils
+nodejs
+npm
