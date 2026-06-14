@@ -35,11 +35,10 @@ While the core pipeline is functional, the engine currently lacks several advanc
 
 * **Ephemeral Package State:** Because the container does not yet support dynamic volume mounting (`-v /host:/container`), any system packages installed during runtime (like `apk add php83-pdo_mysql`) are permanently destroyed the moment the container exits.
 * **Lack of Automation:** Bootstrapping the environment currently requires manual intervention inside the container (e.g., executing the `apk` package installs and launching the PHP server) rather than spinning up automatically via a startup daemon or script.
-* **No Resource Quotas (cgroups):** The container runtime currently has unbounded access to the host machine's hardware. A malicious or broken script inside the container could consume 100% of your laptop's RAM or CPU, as Control Groups have not yet been implemented in your Python engine.
 * **Single-Node Limitation:** The engine has been validated for Host-to-Container communication, but Container-to-Container routing (e.g., spinning up two isolated containers that talk to *each other* without hitting the host) remains untested.
 
 ---
 
 ### **IV. Systems Engineering Assessment**
 
-The environment is stable. You have overcome the primary hurdle of containerization: network bridging and filesystem isolation. The immediate bottleneck to solve for a smoother workflow is **Volume Mounting** to solve the ephemeral package loss, or writing an **Entrypoint Script** to fully automate the container's boot sequence.
+The environment is stable. Project have overcome the primary hurdle of containerization: network bridging and filesystem isolation. The immediate bottleneck to solve for a smoother workflow is **Volume Mounting** to solve the ephemeral package loss, or writing an **Entrypoint Script** to fully automate the container's boot sequence.
