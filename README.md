@@ -1,44 +1,195 @@
+# minimal-container-runtime
 
-## **Project Status: Minimal Container Runtime**
-
-**Current Phase:** Successful core infrastructure build. The engine successfully isolates processes, virtualizes the filesystem, establishes a bridged network, and facilitates cross-environment data routing.
-
-### **I. Technical Stack & Tools Used**
-
-The architecture is divided into the Host OS layer and the Containerized Sandbox layer.
-
-* **Core Engine:** Python 3 (`src/cli.py`) utilizing Linux system calls to manage namespaces.
-* **Host Operating System:** Ubuntu 24.04 (acting as the master node).
-* **Host Database:** MySQL 8.0, configured to bind to all network interfaces (`0.0.0.0`).
-* **Container Base Image:** Alpine-style minimal `rootfs` (executing `/bin/sh` and `/bin/bash`).
-* **Container Application Server:** PHP 8.3 (using the built-in development server).
-* **Web UI / Database Client:** Adminer 4.17.1 (injected via `adminer-core.php` with a custom authentication bypass wrapper).
-* **Package Management:** `apk` (Alpine Package Keeper) used inside the container for dynamic dependency injection.
+A minimal Linux container runtime built from scratch in Python. No Docker, no containerd — just raw Linux syscalls: namespaces, cgroups, OverlayFS, pivot_root, and veth networking. Ships with an Adminer PHP database UI running inside the container.
 
 ---
 
-### **II. Implemented Features & Capabilities**
+## Architecture
 
-Your runtime currently supports the following production-level features:
+```
+cli.py
+  └── runtime.py          # orchestrates host + container phases
+        ├── namespaces.py # unshare(2): PID, mount, net, UTS
+        ├── rootfs.py     # overlayfs + pivot_root + DNS injection
+        ├── cgroups.py    # cgroup v2: memory, CPU, PID limits
+        └── network.py    # veth pair + bridge + NAT routing
+```
 
-* **Process Isolation:** The engine successfully spawns an independent shell environment distinct from the Ubuntu host.
-* **Network Namespacing (Bridging):** The container operates on its own dedicated virtual subnet (`appnet`). It is assigned a unique IP (`10.0.0.2`) and uses the host as a gateway router (`10.0.0.1`).
-* **Cross-Host Traffic Routing:** Applications inside the container can successfully escape the isolated network namespace to communicate with daemons running on the host machine (e.g., the containerized Adminer logging into the host's MySQL).
-* **Port Binding:** The engine successfully maps network traffic, allowing a browser on the Ubuntu host to view a web server running exclusively inside the container's isolated network (`http://10.0.0.2:8080`).
-* **Template Baking (Persistent Base Files):** By modifying the `rootfs/var/www/` directory directly on the host, the container boots with a pre-configured, persistent web application directory.
+### How a container boots
+
+```
+Host process
+  │
+  ├── preflight_check()          verify appnet bridge exists
+  ├── fork()  ─────────────────► Namespace process
+  │                                  unshare(NEWPID|NEWNS|NEWNET|NEWUTS)
+  │                                  fork()  ──────────────────► Container init
+  │                                                                  setup_container_fs()
+  │                                                                    mount overlayfs
+  │                                                                    inject /etc/resolv.conf
+  │                                                                    bind /var/www
+  │                                                                    mount /proc
+  │                                                                    pivot_root()
+  │                                                                    execvp(command)
+  ├── setup_cgroups(pid)         memory/CPU/PID limits
+  ├── setup_network(pid)         veth → appnet bridge → NAT
+  └── waitpid() → finally:       cleanup veth, umount, rmtree, cgroup
+```
 
 ---
 
-### **III. Current Limitations & Bottlenecks**
+## Features
 
-While the core pipeline is functional, the engine currently lacks several advanced features required for a truly robust runtime (like Docker or containerd).
-
-* **Ephemeral Package State:** Because the container does not yet support dynamic volume mounting (`-v /host:/container`), any system packages installed during runtime (like `apk add php83-pdo_mysql`) are permanently destroyed the moment the container exits.
-* **Lack of Automation:** Bootstrapping the environment currently requires manual intervention inside the container (e.g., executing the `apk` package installs and launching the PHP server) rather than spinning up automatically via a startup daemon or script.
-* **Single-Node Limitation:** The engine has been validated for Host-to-Container communication, but Container-to-Container routing (e.g., spinning up two isolated containers that talk to *each other* without hitting the host) remains untested.
+| Feature | Implementation |
+|---|---|
+| Process isolation | `CLONE_NEWPID` via `unshare(2)` |
+| Filesystem isolation | OverlayFS + `pivot_root(2)` |
+| Network isolation | `CLONE_NEWNET` + veth pair |
+| Resource limits | cgroup v2 (memory, CPU, PIDs) |
+| Internet access | NAT via `iptables MASQUERADE` |
+| DNS | Static `resolv.conf` injected post-overlay-mount |
+| Persistent workspace | bind-mount `./workspace` → `/var/www` |
+| Copy-on-write rootfs | OverlayFS upper/lower/work/merged |
+| Database UI | Adminer v5.4.1 on `http://10.0.0.2:8080` |
 
 ---
 
-### **IV. Systems Engineering Assessment**
+## Requirements
 
-The environment is stable. Project have overcome the primary hurdle of containerization: network bridging and filesystem isolation. The immediate bottleneck to solve for a smoother workflow is **Volume Mounting** to solve the ephemeral package loss, or writing an **Entrypoint Script** to fully automate the container's boot sequence.
+- Linux kernel 5.x+ with cgroup v2 enabled
+- Python 3.10+
+- `iproute2`, `iptables`, `nsenter`
+- Alpine-based rootfs at `./rootfs/`
+- Adminer pre-downloaded at `./workspace/adminer-core.php`
+
+---
+
+## Setup
+
+### 1. Host prerequisites (once)
+
+```bash
+sudo python3 src/setup_host.py
+```
+
+This creates the `appnet` bridge, enables IP forwarding (persisted to `/etc/sysctl.d/99-mdocker.conf`), and sets up iptables NAT rules. Idempotent — safe to run multiple times.
+
+### 2. Pre-seed Adminer (once)
+
+```bash
+wget https://github.com/vrana/adminer/releases/download/v5.4.1/adminer-5.4.1.php \
+     -O workspace/adminer-core.php
+```
+
+> Alpine busybox wget has TLS limitations that cause broken pipe errors on some GitHub redirects. Download on the host instead.
+
+### 3. Run
+
+```bash
+sudo python3 src/cli.py run /entrypoint.sh
+```
+
+Open `http://10.0.0.2:8080` in your browser.
+
+---
+
+## Usage
+
+```bash
+# Run the full stack (PHP + Adminer)
+sudo python3 src/cli.py run /entrypoint.sh
+
+# Drop into a shell inside the container
+sudo python3 src/cli.py run /bin/bash
+
+# Run any command
+sudo python3 src/cli.py run /bin/sh -c "echo hello from container"
+```
+
+---
+
+## Adminer Login
+
+| Field | Value |
+|---|---|
+| System | SQLite 3 |
+| Username | *(leave empty)* |
+| Password | *(leave empty)* |
+| Database | `/var/www/dev.db` |
+
+The `login()` bypass in `workspace/index.php` accepts any credentials.
+
+---
+
+## Resource Limits (cgroup v2)
+
+| Resource | Limit |
+|---|---|
+| Memory | 256 MB |
+| CPU | 50% (50ms per 100ms window) |
+| Max PIDs | 64 |
+
+Cgroup at `/sys/fs/cgroup/mycontainer`, cleaned up on container exit.
+
+---
+
+## Networking
+
+```
+Container (10.0.0.2)
+    eth0 ──── veth{pid} ──── appnet bridge (10.0.0.1) ──── host NIC ──── internet
+                                    │
+                              iptables NAT
+                           MASQUERADE 10.0.0.0/24
+```
+
+The veth pair is named `veth{pid}` / `vethc{pid}` and deleted on cleanup.
+
+---
+
+## Known Issues
+
+| Issue | Status | Notes |
+|---|---|---|
+| `appnet` bridge lost on reboot | Known | Re-run `setup_host.py` after reboot. iptables rules also reset unless you use `iptables-persistent`. |
+| Alpine busybox wget TLS failures | Known | Pre-seed `adminer-core.php` from host. In-container HTTPS to GitHub is unreliable. |
+| `[INIT] Terminating...` spam on Ctrl+C | Known | `kill 0` in the trap catches itself recursively. Cosmetic only — container exits correctly. |
+| `NO-CARRIER` on appnet in logs | Not a bug | Bridges show NO-CARRIER when no physical cable is attached. Normal behavior. |
+
+---
+
+## Project Structure
+
+```
+minimal-container-runtime/
+├── src/
+│   ├── cli.py            # argparse entrypoint
+│   ├── runtime.py        # container lifecycle orchestration
+│   ├── namespaces.py     # linux namespace isolation
+│   ├── rootfs.py         # overlayfs, pivot_root, DNS, bind mounts
+│   ├── cgroups.py        # cgroup v2 resource limits
+│   ├── network.py        # veth + bridge + routing
+│   └── setup_host.py     # one-time host prerequisites
+├── rootfs/               # alpine base image (not committed)
+│   └── entrypoint.sh     # container init script
+├── workspace/            # bind-mounted into /var/www
+│   ├── adminer-core.php  # adminer v5.4.1
+│   ├── index.php         # bypass wrapper
+│   └── dev.db            # sqlite database
+├── notes/                # design notes per subsystem
+└── scripts/              # helper shell scripts
+```
+
+---
+
+## Future Scope
+
+- **User namespace mapping** (`CLONE_NEWUSER`) — run container as non-root on host, map uid 0 inside to unprivileged uid outside
+- **Image layering** — pull and cache OCI-compatible image layers, stack multiple lowerdir layers in OverlayFS
+- **Port forwarding** — `iptables DNAT` rules to expose container ports to host or LAN
+- **Multiple containers** — assign IPs dynamically from a pool (`10.0.0.2`, `.3`, `.4`...), support concurrent runs
+- **`ps`-style container listing** — track running container PIDs in a state file, add `mdocker ps` subcommand
+- **Seccomp filtering** — block dangerous syscalls (`ptrace`, `mount`, `reboot`) via `prctl(PR_SET_SECCOMP)`
+- **Capabilities dropping** — use `prctl(PR_SET_CAPS)` to drop all capabilities after setup
+- **iptables-persistent** — auto-save NAT rules so they survive reboot without re-running setup
+- **Resource limit CLI flags** — `--memory 128m --cpus 0.25 --pids 32` passed through to cgroups
