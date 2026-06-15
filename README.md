@@ -15,7 +15,7 @@ cli.py
         └── network.py    # veth pair + bridge + NAT routing
 ```
 
-### How a container boots
+### How the container boots
 
 ```
 Host process
