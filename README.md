@@ -1,4 +1,4 @@
-#  Minimal Container Runtime
+# 🚢 Minimal Container Runtime
 
 > **No Docker. No containerd. Just pure Python and raw Linux syscalls.** Welcome to a bare-bones, educational Linux container runtime built entirely from scratch. This project strips away the abstraction of modern container engines to expose the underlying Linux primitives: **namespaces, cgroups, OverlayFS, `pivot_root`, and veth networking**.
 
