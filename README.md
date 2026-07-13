@@ -6,7 +6,7 @@ To demonstrate its capabilities, the runtime ships with a fully functional **Adm
 
 ---
 
-## 🏗️ System Architecture
+##  System Architecture
 
 The runtime relies on a clean, modular architecture separating the host orchestration from the isolated container lifecycle.
 
@@ -49,7 +49,7 @@ Host process
 
 ---
 
-## ✨ Core Features
+##  Core Features
 
 | Capability | Under the Hood Implementation |
 | --- | --- |
@@ -65,7 +65,7 @@ Host process
 
 ---
 
-## 🛠️ Prerequisites
+##  Prerequisites
 
 Before you spin up the runtime, ensure your environment meets the following requirements:
 
@@ -77,7 +77,7 @@ Before you spin up the runtime, ensure your environment meets the following requ
 
 ---
 
-## 🚀 Quick Start Guide
+##  Quick Start Guide
 
 ### Step 1: Host Prerequisites (One-time setup)
 
@@ -88,7 +88,7 @@ sudo python3 src/setup_host.py
 
 ```
 
-> **💡 Tip:** This script is idempotent. It is completely safe to run it multiple times.
+> ** Tip:** This script is idempotent. It is completely safe to run it multiple times.
 
 ### Step 2: Pre-seed Adminer (One-time setup)
 
@@ -100,7 +100,7 @@ wget https://github.com/vrana/adminer/releases/download/v5.4.1/adminer-5.4.1.php
 
 ```
 
-> **⚠️ Note on Alpine wget:** Alpine's busybox `wget` has TLS limitations causing broken pipe errors on some GitHub redirects. It is highly recommended to download this on your host machine before running the container.
+> ** Note on Alpine wget:** Alpine's busybox `wget` has TLS limitations causing broken pipe errors on some GitHub redirects. It is highly recommended to download this on your host machine before running the container.
 
 ### Step 3: Run the Container
 
@@ -115,7 +115,7 @@ Once running, open your browser and navigate to **`http://10.0.0.2:8080`**.
 
 ---
 
-## 💻 Usage & Commands
+##  Usage & Commands
 
 You aren't limited to just running the pre-packaged web server. You can use the CLI to drop into different environments:
 
@@ -133,7 +133,7 @@ sudo python3 src/cli.py run /bin/sh -c "echo hello from the container!"
 
 ---
 
-## 📊 Environment Specifications
+##  Environment Specifications
 
 ### Adminer Database Login
 
@@ -169,7 +169,7 @@ Container (10.0.0.2)
 
 ---
 
-## 📂 Project Directory
+##  Project Directory
 
 ```text
 minimal-container-runtime/
@@ -194,18 +194,18 @@ minimal-container-runtime/
 
 ---
 
-## 🚧 Known Issues & Quirks
+##  Known Issues & Quirks
 
 | Status | Issue | Details |
 | --- | --- | --- |
-| ⚠️ | **`appnet` bridge lost on reboot** | Re-run `setup_host.py` after a system reboot. `iptables` rules will also reset unless you install and configure `iptables-persistent`. |
-| ⚠️ | **Alpine busybox TLS failures** | Pre-seed `adminer-core.php` from the host. In-container HTTPS requests to GitHub are currently unreliable. |
-| ℹ️ | **`[INIT] Terminating...` spam** | Hitting `Ctrl+C` causes a recursive `kill 0` trap. This is cosmetic only; the container still exits and cleans up correctly. |
-| ℹ️ | **`NO-CARRIER` in host logs** | Bridges display `NO-CARRIER` when no physical cable is attached. This is normal Linux networking behavior. |
+|  | **`appnet` bridge lost on reboot** | Re-run `setup_host.py` after a system reboot. `iptables` rules will also reset unless you install and configure `iptables-persistent`. |
+|  | **Alpine busybox TLS failures** | Pre-seed `adminer-core.php` from the host. In-container HTTPS requests to GitHub are currently unreliable. |
+|  | **`[INIT] Terminating...` spam** | Hitting `Ctrl+C` causes a recursive `kill 0` trap. This is cosmetic only; the container still exits and cleans up correctly. |
+|  | **`NO-CARRIER` in host logs** | Bridges display `NO-CARRIER` when no physical cable is attached. This is normal Linux networking behavior. |
 
 ---
 
-## 🔭 Future Roadmap
+##  Future Roadmap
 
 We are constantly looking to push this closer to a production-grade (yet minimal) runtime. Here is what's on the horizon:
 
